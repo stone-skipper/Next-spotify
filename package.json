@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fal-ai/serverless-client": "^0.7.4",
+    "@fal-ai/serverless-proxy": "^0.6.0",
     "axios": "^0.24.0",
+    "framer-motion": "^10.17.9",
     "html-react-parser": "^1.4.4",
     "next": "^12.0.7",
     "next-auth": "^4.0.5",
@@ -19,6 +22,7 @@
     "react-icons": "^4.3.1"
   },
   "devDependencies": {
+    "@types/node": "20.10.7",
     "@types/nprogress": "^0.2.0",
     "@types/react": "^17.0.3",
     "autoprefixer": "^10.2.5",

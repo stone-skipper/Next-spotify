@@ -14,11 +14,11 @@ export default function Home({ newReleases, featuredPlaylists }) {
     <Layout title="Welcome to Spotify">
       <h1 className="mb-5 text-3xl font-bold">Good {getGreeting()}</h1>
 
-      <Heading text="New releases" className="mt-10" />
-      <AlbumList albums={newReleases?.albums.items} />
+      {/* <Heading text="New releases" className="mt-10" /> */}
+      {/* <AlbumList albums={newReleases?.albums.items} /> */}
 
-      <Heading text={featuredPlaylists?.message} className="mt-16" />
-      <PlaylistList playlists={featuredPlaylists?.playlists.items} />
+      {/* <Heading text={featuredPlaylists?.message} className="mt-16" /> */}
+      {/* <PlaylistList playlists={featuredPlaylists?.playlists.items} /> */}
     </Layout>
   );
 }

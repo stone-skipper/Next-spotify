@@ -72,6 +72,20 @@ export interface PlaylistType {
   total?: number;
 }
 
+export interface PlayingType {
+  item?: [
+    {
+      album?: Album[];
+      artists?: Artist[];
+      id: string;
+      href: string;
+      name: string;
+      uri: string;
+      duration_ms: number;
+    }
+  ];
+}
+
 export interface SearchResults {
   albums?: {
     items: Album[];
