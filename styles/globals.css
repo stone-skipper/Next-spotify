@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800;900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,5 +6,6 @@
 @layer base {
   body {
     @apply text-white bg-background;
+    font-family: "Gabarito", sans-serif;
   }
 }

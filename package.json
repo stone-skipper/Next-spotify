@@ -12,13 +12,13 @@
     "@fal-ai/serverless-client": "^0.7.4",
     "@fal-ai/serverless-proxy": "^0.6.0",
     "axios": "^0.24.0",
-    "framer-motion": "^10.17.9",
+    "framer-motion": "^10.18.0",
     "html-react-parser": "^1.4.4",
     "next": "^12.0.7",
     "next-auth": "^4.0.5",
     "nprogress": "^0.2.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-icons": "^4.3.1"
   },
   "devDependencies": {

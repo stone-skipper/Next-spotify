@@ -16,7 +16,7 @@ module.exports = {
       },
     },
     fontFamily: {
-      sans: ["Montserrat", "sans-serif"],
+      sans: ["Gabarito", "sans-serif"],
     },
   },
   variants: {

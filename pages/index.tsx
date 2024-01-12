@@ -4,15 +4,21 @@ import { getSession } from "next-auth/react";
 import AlbumList from "../components/AlbumList";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
+import Header from "../components/Header";
 import PlaylistList from "../components/PlaylistList";
+import CurrentlyPlaying from "../components/CurrentPlaying";
 import { customGet } from "../utils/customGet";
 import { getGreeting } from "../utils/getGreeting";
 import { isAuthenticated } from "../utils/isAuthenticated";
+import MovingCanvas from "../components/MovingCanvas";
 
 export default function Home({ newReleases, featuredPlaylists }) {
   return (
     <Layout title="Welcome to Spotify">
-      <h1 className="mb-5 text-3xl font-bold">Good {getGreeting()}</h1>
+      {/* <h1 className="mb-5 text-3xl font-bold">Good {getGreeting()}</h1> */}
+      {/* <Header /> */}
+      <CurrentlyPlaying />
+      <MovingCanvas />
 
       {/* <Heading text="New releases" className="mt-10" /> */}
       {/* <AlbumList albums={newReleases?.albums.items} /> */}

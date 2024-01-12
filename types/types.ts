@@ -49,6 +49,8 @@ export interface Track {
   artists: [Artist];
   duration_ms: number;
   preview_url: string;
+  href: string;
+  uri: string;
 }
 
 export interface PlaylistType {
@@ -73,17 +75,9 @@ export interface PlaylistType {
 }
 
 export interface PlayingType {
-  item?: [
-    {
-      album?: Album[];
-      artists?: Artist[];
-      id: string;
-      href: string;
-      name: string;
-      uri: string;
-      duration_ms: number;
-    }
-  ];
+  is_playing?: boolean;
+  progress_ms?: number;
+  item?: Track;
 }
 
 export interface SearchResults {
