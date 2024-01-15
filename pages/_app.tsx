@@ -52,9 +52,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           ) : (
             <>
               {/* <Sidebar /> */}
-              <div className="flex flex-col ml-64">
+              <div>
                 {/* <Header /> */}
-                <main className="mt-4 ml-4">
+                <main>
                   <Component {...pageProps} />
                 </main>
               </div>

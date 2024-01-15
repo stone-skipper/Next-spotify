@@ -3,22 +3,67 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import * as fal from "@fal-ai/serverless-client";
 import dynamic from "next/dynamic";
 import { useSpotify } from "../context/SpotifyContext";
-import { getRandomColorBetween } from "../utils/drawUtils";
+import { getRandomColorBetween, interpolateColor } from "../utils/drawUtils";
+import { prominent, average } from "color.js";
 
 fal.config({
   credentials: process.env.FAL_KEY,
   proxyUrl: "/api/fal/proxy",
 });
 
-export default function MovingCanvas({ playing, lyrics }) {
+export default function MovingCanvas() {
+  const [color, setColor] = useState(null);
+  const [colors, setColors] = useState([]);
+  const { playing, fetchCurrentPlaying } = useSpotify();
+  const { lyrics, fetchLyrics } = useSpotify();
+  const [current, setCurrent] = useState("");
+  const frequencyDataHistoryRef = useRef([]);
+  const maxHistoryLength = 70; // Adjust this value based on your needs
+
+  const addToHistory = (newData) => {
+    const history = frequencyDataHistoryRef.current;
+    const newDataCopy = Array.from(newData); // Create a copy of the current data
+
+    history.push(newDataCopy);
+
+    if (history.length > maxHistoryLength) {
+      history.shift(); // Remove the oldest entry if history exceeds max length
+    }
+  };
+
+  useEffect(() => {
+    // fetchCurrentPlaying();
+
+    setInterval(() => {
+      fetchCurrentPlaying();
+    }, 1000);
+    console.log(playing);
+  }, []);
+
+  useEffect(() => {
+    if (playing) {
+      setCurrent(playing?.item?.name);
+    }
+  }, [playing]);
+
+  useEffect(() => {
+    fetchLyrics();
+  }, [current]);
+
   const frameInterval = 10;
   const canvasRef = useRef(null);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const animationFrameRef = useRef(null);
   const frameCountRef = useRef(0); // Ref to keep track of frame count
+  const rotationAngleRef = useRef(0);
+
   useEffect(() => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (
+      colors.length !== 0 &&
+      navigator.mediaDevices &&
+      navigator.mediaDevices.getUserMedia
+    ) {
       navigator.mediaDevices
         .getUserMedia({ audio: true })
         .then((stream) => {
@@ -46,7 +91,11 @@ export default function MovingCanvas({ playing, lyrics }) {
         audioContextRef.current.close();
       }
     };
-  }, []);
+  }, [colors]);
+
+  useEffect(() => {
+    console.log(frequencyDataHistoryRef.current);
+  }, [frequencyDataHistoryRef.current]);
 
   const animate = () => {
     const canvas = canvasRef.current;
@@ -54,14 +103,19 @@ export default function MovingCanvas({ playing, lyrics }) {
 
     const ctx = canvas.getContext("2d");
     const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+    // setLog([frequencyData, ...log]);
     // console.log(frequencyData.length);
 
     const draw = () => {
       analyser.getByteFrequencyData(frequencyData);
-      //   console.log(frequencyData);
-      //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "rgb(100,100,100)";
+      addToHistory(frequencyData);
+
+      // ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = color;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const rotationSpeed = 0.02; // Adjust this value to control the speed of rotation
+      rotationAngleRef.current += rotationSpeed;
 
       let barWidth = canvas.width / frequencyData.length;
       //   for (let i = 0; i < frequencyData.length; i++) {
@@ -76,16 +130,48 @@ export default function MovingCanvas({ playing, lyrics }) {
       //     );
       //   }
 
-      for (let i = 0; i < 8; i++) {
-        for (let k = 0; k < 8; k++) {
-          const barHeight = frequencyData[i] * 2;
-          ctx.fillStyle = "rgba(0,0,0," + frequencyData[8 * i + k] / 255 + ")";
-          ctx.fillRect(
-            (i * canvas.width) / 8,
-            (k * canvas.width) / 8,
-            canvas.width / 8,
-            canvas.height / 8
+      // for (let i = 0; i < 8; i++) {
+      //   for (let k = 0; k < 8; k++) {
+      //     const barHeight = frequencyData[i] * 2;
+      //     ctx.fillStyle = "rgba(0,0,0," + frequencyData[8 * i + k] / 255 + ")";
+      //     ctx.fillRect(
+      //       (i * canvas.width) / 8,
+      //       (k * canvas.width) / 8,
+      //       canvas.width / 8,
+      //       canvas.height / 8
+      //     );
+      //   }
+      // }
+
+      // for (let i = 0; i < frequencyData.length; i++) {
+      //   ctx.beginPath();
+      //   ctx.lineWidth = (frequencyData[i] / 255) * 15;
+      //   ctx.strokeStyle = color;
+      //   ctx.arc(canvas.width / 2, canvas.height / 2, i * 8, 0, 2 * Math.PI);
+      //   ctx.stroke();
+      // }
+
+      for (let i = 0; i < frequencyDataHistoryRef.current.length; i++) {
+        for (let k = 0; k < frequencyDataHistoryRef.current[i].length; k++) {
+          ctx.strokeStyle = interpolateColor(
+            colors[0],
+            colors[2],
+            frequencyDataHistoryRef.current[i][k] / 255
           );
+
+          ctx.beginPath();
+
+          ctx.lineWidth = (frequencyDataHistoryRef.current[i][k] / 255) * 15;
+          ctx.arc(
+            canvas.width / 2,
+            canvas.height / 2,
+            (frequencyDataHistoryRef.current.length - i) * 6,
+            ((2 * Math.PI) / frequencyDataHistoryRef.current[i].length) *
+              (k + rotationAngleRef.current),
+            ((2 * Math.PI) / frequencyDataHistoryRef.current[i].length) *
+              (k + 1 + rotationAngleRef.current)
+          );
+          ctx.stroke();
         }
       }
 
@@ -108,14 +194,29 @@ export default function MovingCanvas({ playing, lyrics }) {
     // console.log(imageString);
   };
 
-  //   const { playing, fetchCurrentPlaying } = useSpotify();
-  //   const { lyrics, fetchLyrics } = useSpotify();
-  const [current, setCurrent] = useState("");
+  useEffect(() => {
+    if (playing) {
+      average(playing?.item?.album.images[0].url, {
+        amount: 1,
+        format: "hex",
+      }).then((color) => {
+        console.log(color); // [241, 221, 63]
+        setColor(color);
+      });
+
+      prominent(playing?.item?.album.images[0].url, {
+        amount: 3,
+        format: "hex",
+      }).then((color) => {
+        console.log(color);
+        // @ts-ignore
+        setColors(Array.from(color));
+      });
+    }
+  }, [current]);
 
   const [start, setStart] = useState(false);
-  const [input, setInput] = useState(
-    "a flying panda drawn in oil painting style"
-  );
+
   const [image, setImage] = useState(null);
   const getImage = useCallback((image) => {
     setImage(image);
@@ -193,9 +294,10 @@ export default function MovingCanvas({ playing, lyrics }) {
     ]);
     await sendMessage(messages);
   };
+
   useEffect(() => {
     if (lyrics && lyrics.error === false && lyrics.lines) {
-      requestInspo();
+      //   requestInspo();
     }
   }, [lyrics]);
 
@@ -231,13 +333,17 @@ export default function MovingCanvas({ playing, lyrics }) {
   return (
     <div
       style={{
-        background: "gray",
+        background: color,
         position: "fixed",
         right: 0,
-        bottom: 0,
+        top: 0,
+        width: "100vw",
+        height: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        flexDirection: "column",
+        zIndex: 0,
       }}
     >
       <div
@@ -247,22 +353,22 @@ export default function MovingCanvas({ playing, lyrics }) {
       >
         {start === true ? "stop" : "start"}
       </div>
-      {/* <div
-        onClick={() => {
-          setRunning(!running);
-        }}
-      >
-        {running === true ? "microphone on" : "microphone off"}
-      </div> */}
-      {/* <P5JsComponent captureInterval={10} getImage={getImage} /> */}
+      {colors.map((info, index) => {
+        return (
+          <div
+            style={{ background: info, width: 30, height: 30 }}
+            key={"color" + index}
+          ></div>
+        );
+      })}
       Current Lyrics:
       <br />
       {lyrics &&
         playing &&
         playing.is_playing === true &&
         lyrics.error === false &&
-        lyrics.lines[getCurrentLyricIndex(lyrics.lines, playing?.progress_ms)]
-          .words}
+        lyrics?.lines[getCurrentLyricIndex(lyrics.lines, playing?.progress_ms)]
+          ?.words}
       <br />
       Prompt:
       {inspo.length !== 0 &&

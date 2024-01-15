@@ -12,6 +12,7 @@
     "@fal-ai/serverless-client": "^0.7.4",
     "@fal-ai/serverless-proxy": "^0.6.0",
     "axios": "^0.24.0",
+    "color.js": "^1.2.0",
     "framer-motion": "^10.18.0",
     "html-react-parser": "^1.4.4",
     "next": "^12.0.7",

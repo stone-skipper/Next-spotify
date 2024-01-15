@@ -9,7 +9,18 @@ function hexToRgb(hex) {
     : null;
 }
 
-function interpolateColor(color1, color2, factor = 0.5) {
+function rgbToHex(rgbString) {
+  // Extract the integers from the rgb string
+  const [r, g, b] = rgbString.match(/\d+/g).map(Number);
+
+  // Convert each value to hexadecimal and pad with zero if necessary
+  const toHex = (c) => c.toString(16).padStart(2, "0");
+
+  // Concatenate the converted values into a hex color string
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+export function interpolateColor(color1, color2, factor = 0.5) {
   var rgb1 = hexToRgb(color1);
   var rgb2 = hexToRgb(color2);
   const interpolate = (start, end, factor) => (end - start) * factor + start;
@@ -19,7 +30,7 @@ function interpolateColor(color1, color2, factor = 0.5) {
     g: Math.round(interpolate(rgb1.g, rgb2.g, factor)),
     b: Math.round(interpolate(rgb1.b, rgb2.b, factor)),
   };
-  return `rgb(${result.r}, ${result.g}, ${result.b})`;
+  return rgbToHex(`rgb(${result.r}, ${result.g}, ${result.b})`);
 }
 
 export function getRandomColorBetween(color1, color2) {

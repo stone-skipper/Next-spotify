@@ -2,7 +2,7 @@ import { PlayingType, MySession } from "../types/types";
 import { useSpotify } from "../context/SpotifyContext";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
-import MovingCanvas from "./MovingCanvas";
+import { motion } from "framer-motion";
 
 // interface IProps {
 //   playing: PlayingType;
@@ -61,13 +61,25 @@ export default function CurrentlyPlaying() {
   }, [current]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <MovingCanvas playing={playing} lyrics={lyrics} />
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        position: "fixed",
+        width: "100vw",
+        height: "100vh",
+        top: 0,
+        left: 0,
+        zIndex: 10,
+        pointerEvents: "none",
+        padding: 20,
+      }}
+    >
       <div
         style={{
           display: "flex",
           flexDirection: "row",
-          justifyContent: "center",
+          justifyContent: "flex-end",
           alignItems: "center",
           gap: 10,
         }}
@@ -91,18 +103,50 @@ export default function CurrentlyPlaying() {
       {playing?.progress_ms}
       <br />
       {/* {playing?.item.id} */}
-      <br />
-      {playing?.item?.name}
-      {playing?.item?.artists.map((info, index) => {
-        return <div key={index}>{info.name}</div>;
-      })}
-      {playing && (
-        <img
-          src={playing?.item?.album.images[0].url}
-          width={300}
-          height={300}
-        />
-      )}
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 20,
+        }}
+      >
+        {playing && (
+          <motion.div
+            style={{
+              width: 100,
+              height: 100,
+              background: "black",
+              borderRadius: 1000,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            animate={{ rotate: playing?.is_playing === true ? 360 : 0 }}
+            transition={{
+              repeat: Infinity,
+              duration: playing?.is_playing === true ? 10 : 0,
+              ease: "linear",
+            }}
+          >
+            <img
+              src={playing?.item?.album.images[0].url}
+              width={50}
+              height={50}
+              style={{ borderRadius: 1000 }}
+            />
+          </motion.div>
+        )}
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <span>
+            {playing?.item?.artists.map((info, index) => {
+              return <div key={index}>{info.name}</div>;
+            })}
+          </span>
+          <span style={{ fontSize: 40 }}>{playing?.item?.name}</span>
+        </div>
+      </div>
 
       <div>
         {lyrics &&
@@ -110,7 +154,7 @@ export default function CurrentlyPlaying() {
           playing &&
           lyrics?.lines.map((info, index) => {
             return (
-              <div
+              <motion.div
                 key={index}
                 style={{
                   opacity:
@@ -120,8 +164,9 @@ export default function CurrentlyPlaying() {
                       : 0.4,
                 }}
               >
-                {parseInt(info.startTimeMs)} - {info.words}
-              </div>
+                {/* {parseInt(info.startTimeMs)} -  */}
+                {info.words}
+              </motion.div>
             );
           })}
         {lyrics && lyrics.error !== false && lyrics.message}
