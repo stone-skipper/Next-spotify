@@ -102,7 +102,7 @@ export default function CurrentlyPlaying() {
       <br />
       {playing?.progress_ms}
       <br />
-      {/* {playing?.item.id} */}
+      {playing?.item.id}
 
       <div
         style={{
