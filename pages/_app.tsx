@@ -1,5 +1,7 @@
 import { SessionProvider } from "next-auth/react";
-import { AppProps } from "next/app";
+import type { AppProps } from "next/app";
+import { Session } from "next-auth";
+
 import { useRouter } from "next/router";
 import nProgress from "nprogress";
 import { useEffect } from "react";
@@ -16,7 +18,12 @@ nProgress.configure({
   showSpinner: false,
 });
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({
+  Component,
+  pageProps,
+}: AppProps<{
+  session: Session;
+}>) {
   const router = useRouter();
 
   useEffect(() => {
