@@ -12,7 +12,7 @@ fal.config({
   proxyUrl: "/api/fal/proxy",
 });
 
-export default function MovingCanvas() {
+export default function MovingCanvasAI() {
   const [wSize, setWSize] = useState({ w: 512, h: 512 });
   const [color, setColor] = useState(null);
   const [colors, setColors] = useState([]);
@@ -89,10 +89,10 @@ export default function MovingCanvas() {
     }
 
     return () => {
-      cancelAnimationFrame(animationFrameRef.current);
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
+      //   cancelAnimationFrame(animationFrameRef.current);
+      //   if (audioContextRef.current) {
+      //     audioContextRef.current.close();
+      //   }
     };
   }, [colors]);
 
@@ -309,7 +309,7 @@ export default function MovingCanvas() {
   const [result, setResult] = useState(null);
 
   const connection = fal.realtime.connect("fal-ai/lcm-sd15-i2i", {
-    throttleInterval: 128,
+    // throttleInterval: 128,
     onResult: (result) => {
       setResult(result.images[0].url);
       //   console.log(result.images[0].url);
@@ -327,7 +327,7 @@ export default function MovingCanvas() {
             ? // @ts-ignore
               inspo?.prompt[
                 getCurrentLyricIndex(lyrics.lines, playing?.progress_ms)
-              ] + " in rough oil painting style"
+              ] + ""
             : lyrics?.lines[
                 getCurrentLyricIndex(lyrics.lines, playing?.progress_ms)
               ]?.words + " in rough oil painting style",

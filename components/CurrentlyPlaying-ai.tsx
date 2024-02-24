@@ -11,7 +11,7 @@ interface UseSession {
   data: MySession | null;
 }
 
-export default function CurrentlyPlaying() {
+export default function CurrentlyPlayingAI() {
   const lyricsHeight = 60;
   const { playing, fetchCurrentPlaying } = useSpotify();
   const { lyrics, fetchLyrics } = useSpotify();

@@ -46,19 +46,19 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fal-ai/serverless-client@^0.7.4":
-  version "0.7.4"
-  resolved "https://registry.yarnpkg.com/@fal-ai/serverless-client/-/serverless-client-0.7.4.tgz#0dcf769d0f2778fcab24b8fd2d9f579bad571226"
-  integrity sha512-E68x6re35E5GzB7ay7wRxDT74ykCjCzWGrRv/w1W3bFAnrolzfknjPIYQque8own0P0yWhhiJynN/LyuyRlchw==
+"@fal-ai/serverless-client@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@fal-ai/serverless-client/-/serverless-client-0.8.2.tgz#22f368738f346586239a75c447855633d6855a81"
+  integrity sha512-oGT7Vi6S+CviOTsIEAf6isnLEp6g4gQEPBE6SqJUlbVIGFDzQQdXZr9bdToGXIomYXassD9waFfPBedxUVCKtA==
   dependencies:
     "@msgpack/msgpack" "^3.0.0-beta2"
     robot3 "^0.4.1"
     uuid-random "^1.3.2"
 
-"@fal-ai/serverless-proxy@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@fal-ai/serverless-proxy/-/serverless-proxy-0.6.0.tgz#5c70b4ea3b78302d4aec653a1146146bcc5030bf"
-  integrity sha512-fu1IOKTvwa1x5oJh/BffKav60lz89Uw8M/6SP6imkrphnDRjsc53unr0qCs3UN3NSuHs8syG/xZ9KntORvbq5g==
+"@fal-ai/serverless-proxy@^0.7.3":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@fal-ai/serverless-proxy/-/serverless-proxy-0.7.3.tgz#05eb5b53a9d0e6ab5cc2b2081d6b218edce427a4"
+  integrity sha512-iTr+1UJFUpEKR4gKBGFcsw3X4fl7mcYFbN4VXtrTGppkqZYd9oa4bND7Q8ANKCKqOn6hYzuwY+qGbGjzV6tnWw==
 
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.5"
@@ -1836,6 +1836,11 @@ minimist@^1.2.0, minimist@^1.2.6:
   resolved "https://registry.yarnpkg.com/minipass/-/minipass-7.0.4.tgz#dbce03740f50a4786ba994c1fb908844d27b038c"
   integrity sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==
 
+moment@^2.30.1:
+  version "2.30.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
+  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
+
 ms@2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
@@ -2838,3 +2843,10 @@ yaml@^2.3.4:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.3.4.tgz#53fc1d514be80aabf386dc6001eb29bf3b7523b2"
   integrity sha512-8aAvwVUSHpfEqTQ4w/KMlf3HcRdt50E5ODIQJBw1fQ5RL34xabzxtUlzTXVqc4rkZsPbvrXKWnABCD7kWSmocA==
+
+zustand@^4.5.1:
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.5.1.tgz#2088956ee454759fb8b866ca335a2373e76736c5"
+  integrity sha512-XlauQmH64xXSC1qGYNv00ODaQ3B+tNPoy22jv2diYiP4eoDKr9LA+Bh5Bc3gplTrFdb6JVI+N4kc1DZ/tbtfPg==
+  dependencies:
+    use-sync-external-store "1.2.0"

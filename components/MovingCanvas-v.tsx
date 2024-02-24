@@ -12,21 +12,42 @@ fal.config({
   proxyUrl: "/api/fal/proxy",
 });
 
-export default function MovingCanvas() {
+export default function MovingCanvasV() {
   const [wSize, setWSize] = useState({ w: 512, h: 512 });
   const [color, setColor] = useState(null);
   const [colors, setColors] = useState([]);
   const { playing, fetchCurrentPlaying } = useSpotify();
   const { lyrics, fetchLyrics } = useSpotify();
+  const { trackAnalysis, fetchTrackAnalysis } = useSpotify();
   const [current, setCurrent] = useState("");
+  //   const [progress, setProgress] = useState(0);
   const frequencyDataHistoryRef = useRef([]);
   const maxHistoryLength = 70; // Adjust this value based on your needs
 
+  //   const addToHistory = (newData) => {
+  //     const history = frequencyDataHistoryRef.current;
+  //     const newDataCopy = Array.from(newData); // Create a copy of the current data
+
+  //     history.push(newDataCopy);
+
+  //     if (history.length > maxHistoryLength) {
+  //       history.shift(); // Remove the oldest entry if history exceeds max length
+  //     }
+  //   };
+
   const addToHistory = (newData) => {
     const history = frequencyDataHistoryRef.current;
-    const newDataCopy = Array.from(newData); // Create a copy of the current data
+    const newDataWithoutFirst = Array.from(newData).slice(1);
 
-    history.push(newDataCopy);
+    // Prepare the modified data array: original (without 0th) + reversed (exclude last to prevent duplication)
+    const modifiedData = [
+      ...newDataWithoutFirst.slice(0, -1),
+      // Reverse everything but the last item to avoid duplication, since the last of original is now the first of reversed
+      ...newDataWithoutFirst.slice(0, -1).slice(1).reverse(),
+    ];
+
+    // Push this modified data into the history
+    history.push(modifiedData);
 
     if (history.length > maxHistoryLength) {
       history.shift(); // Remove the oldest entry if history exceeds max length
@@ -39,19 +60,26 @@ export default function MovingCanvas() {
 
     setInterval(() => {
       fetchCurrentPlaying();
-    }, 1000);
+    }, 500);
     console.log(playing);
   }, []);
 
   useEffect(() => {
     if (playing) {
       setCurrent(playing?.item?.name);
+      //   progressRef.current = playing?.progress_ms / 1000;
+      //   setProgress(playing?.progress_ms / 1000);
     }
   }, [playing]);
 
   useEffect(() => {
     fetchLyrics();
+    fetchTrackAnalysis();
   }, [current]);
+
+  useEffect(() => {
+    console.log(trackAnalysis);
+  }, [trackAnalysis]);
 
   const frameInterval = 10;
   const canvasRef = useRef(null);
@@ -64,6 +92,7 @@ export default function MovingCanvas() {
   useEffect(() => {
     if (
       colors.length !== 0 &&
+      playing.is_playing === true &&
       navigator.mediaDevices &&
       navigator.mediaDevices.getUserMedia
     ) {
@@ -76,7 +105,7 @@ export default function MovingCanvas() {
 
           const audioContext = audioContextRef.current;
           const analyser = audioContext.createAnalyser();
-          analyser.fftSize = 128;
+          analyser.fftSize = 64;
 
           analyserRef.current = analyser;
 
@@ -89,16 +118,12 @@ export default function MovingCanvas() {
     }
 
     return () => {
-      cancelAnimationFrame(animationFrameRef.current);
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
+      //   cancelAnimationFrame(animationFrameRef.current);
+      //   if (audioContextRef.current) {
+      //     audioContextRef.current.close();
+      //   }
     };
   }, [colors]);
-
-  useEffect(() => {
-    console.log(frequencyDataHistoryRef.current);
-  }, [frequencyDataHistoryRef.current]);
 
   const animate = () => {
     const canvas = canvasRef.current;
@@ -106,21 +131,24 @@ export default function MovingCanvas() {
 
     const ctx = canvas.getContext("2d");
     const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
     // setLog([frequencyData, ...log]);
     // console.log(frequencyData.length);
 
     const draw = () => {
       analyser.getByteFrequencyData(frequencyData);
-      addToHistory(frequencyData);
+      if (playing?.is_playing === true) {
+        addToHistory(frequencyData);
+      }
 
       // ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = color;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const rotationSpeed = 0.02; // Adjust this value to control the speed of rotation
+      const rotationSpeed = playing?.is_playing === true ? 0.03 : 0; // Adjust this value to control the speed of rotation
+
       rotationAngleRef.current += rotationSpeed;
 
-      let barWidth = canvas.width / frequencyData.length;
       //   for (let i = 0; i < frequencyData.length; i++) {
       // ctx.fillStyle = getRandomColorBetween("#FF7D54", "#5EABF8");
 
@@ -180,10 +208,40 @@ export default function MovingCanvas() {
 
       frameCountRef.current++;
       if (frameCountRef.current >= frameInterval) {
-        captureCanvas();
+        // captureCanvas();
         frameCountRef.current = 0; // Reset frame count after capture
       }
 
+      //   let barWidth = canvas.width / trackAnalysis?.segments.length;
+      //   for (let i = 0; i < trackAnalysis?.segments.length; i++) {
+      //     if (
+      //       progressRef.current > trackAnalysis.segments[i].start &&
+      //       progressRef.current <
+      //         trackAnalysis.segments[i].start + trackAnalysis.segments[i].duration
+      //     ) {
+      //       ctx.fillStyle = "red";
+      //     } else {
+      //       ctx.fillStyle = "pink";
+      //     }
+
+      //     const pitch =
+      //       (Math.max(...trackAnalysis.segments[i].pitches) * canvas.height) / 2;
+
+      //     const barHeight =
+      //       (((trackAnalysis.segments[i].pitches.indexOf(
+      //         Math.max(...trackAnalysis.segments[i].pitches)
+      //       ) +
+      //         1) /
+      //         12) *
+      //         canvas.height) /
+      //       2;
+      //     ctx.fillRect(
+      //       i * barWidth,
+      //       canvas.height / 2 - barHeight / 2,
+      //       barWidth,
+      //       barHeight
+      //     );
+      //   }
       animationFrameRef.current = requestAnimationFrame(draw);
     };
 
@@ -198,7 +256,7 @@ export default function MovingCanvas() {
   };
 
   useEffect(() => {
-    if (playing) {
+    if (playing && playing?.item?.album.images[0].url) {
       average(playing?.item?.album.images[0].url, {
         amount: 1,
         format: "hex",
@@ -299,7 +357,7 @@ export default function MovingCanvas() {
 
   useEffect(() => {
     if (lyrics && lyrics.error === false && lyrics.lines) {
-      requestInspo();
+      //   requestInspo();
     }
   }, [lyrics]);
 
@@ -343,12 +401,12 @@ export default function MovingCanvas() {
   return (
     <div
       style={{
-        background: color,
+        background: colors[1],
         position: "fixed",
         right: 0,
         top: 0,
         width: "100vw",
-        height: "100vh",
+        height: "100vw",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -356,74 +414,43 @@ export default function MovingCanvas() {
         zIndex: 0,
       }}
     >
-      <motion.div
-        onClick={() => {
-          setStart(!start);
-        }}
-        style={{
-          position: "fixed",
-          right: 140,
-          bottom: 0,
-          zIndex: 100,
+      <div style={{ display: "none" }}>
+        Current Lyrics:
+        <br />
+        {lyrics &&
+          playing &&
+          playing.is_playing === true &&
+          lyrics.error === false &&
+          lyrics?.lines[
+            getCurrentLyricIndex(lyrics.lines, playing?.progress_ms)
+          ]?.words}
+        <br />
+        Prompt:
+        {inspo.length !== 0 &&
+          // @ts-ignore
+          inspo?.prompt[
+            getCurrentLyricIndex(lyrics.lines, playing?.progress_ms)
+          ]}
+      </div>
 
-          cursor: "pointer",
-          textAlign: "right",
-          margin: 48,
-          color: "white",
-        }}
-        whileHover={{ scale: 1.05 }}
-      >
-        {inspo.length !== 0 ? "prompt ready" : ""}
-      </motion.div>
-      <motion.div
-        onClick={() => {
-          setStart(!start);
-        }}
-        style={{
-          position: "fixed",
-          right: 0,
-          bottom: 0,
-          zIndex: 100,
-          padding: "20px 30px",
-          borderRadius: 200,
-          background: "white",
-          cursor: "pointer",
-          margin: 28,
-          color: color,
-        }}
-        whileHover={{ scale: 1.05 }}
-      >
-        Visualizer {start === true ? "on" : "off"}
-      </motion.div>
-      {/* {colors.map((info, index) => {
-          return (
-            <div
-              style={{ background: info, width: 30, height: 30 }}
-              key={"color" + index}
-            ></div>
-          );
-        })} */}
-      Current Lyrics:
-      <br />
-      {lyrics &&
-        playing &&
-        playing.is_playing === true &&
-        lyrics.error === false &&
-        lyrics?.lines[getCurrentLyricIndex(lyrics.lines, playing?.progress_ms)]
-          ?.words}
-      <br />
-      Prompt:
-      {inspo.length !== 0 &&
-        // @ts-ignore
-        inspo?.prompt[getCurrentLyricIndex(lyrics.lines, playing?.progress_ms)]}
       <div
         style={{
-          position: "absolute",
-          left: 0,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "fixed",
+          right: 0,
           top: 0,
+          width: "90vw",
+          marginRight: "5vw",
+          marginTop: "5vw",
+          height: "90vw",
+          overflow: "hidden",
+          borderRadius: 1000,
+          background: color,
         }}
       >
-        <canvas ref={canvasRef} width={wSize.w} height={wSize.h} />
+        <canvas ref={canvasRef} width={wSize.w * 0.9} height={wSize.w * 0.9} />
 
         {start === true && (
           <img

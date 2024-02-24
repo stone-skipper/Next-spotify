@@ -17,21 +17,47 @@ const lyricsGet = async (session: MySession | null, trackID: string) => {
   return res;
 };
 
+// export default async function handler(
+//   req: NextApiRequest,
+//   res: NextApiResponse
+// ) {
+//   const session = await getSession({ req });
+
+//   const currentPlay = await customGet(
+//     "https://api.spotify.com/v1/me/player/currently-playing",
+//     session
+//   );
+//   const lyrics = await lyricsGet(session, currentPlay.item.id);
+//   // console.log(lyrics);
+//   res.status(200).json(lyrics);
+//   //   if (currentPlay.is_playing === true) {
+//   //   } else {
+//   //     console.log("nothing is playing");
+//   //   }
+// }
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getSession({ req });
+  // res.status(200).json(lyrics);
+  // //   if (currentPlay.is_playing === true) {
+  // //   } else {
+  // //     console.log("nothing is playing");
+  // //   }
 
-  const currentPlay = await customGet(
-    "https://api.spotify.com/v1/me/player/currently-playing",
-    session
-  );
-  const lyrics = await lyricsGet(session, currentPlay.item.id);
-  // console.log(lyrics);
-  res.status(200).json(lyrics);
-  //   if (currentPlay.is_playing === true) {
-  //   } else {
-  //     console.log("nothing is playing");
-  //   }
+  try {
+    const session = await getSession({ req });
+
+    const currentPlay = await customGet(
+      "https://api.spotify.com/v1/me/player/currently-playing",
+      session
+    );
+    const lyrics = await lyricsGet(session, currentPlay.item.id);
+
+    res.status(200).json(lyrics);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
 }

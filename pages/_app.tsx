@@ -11,14 +11,9 @@ import PlayerProvider from "../context/PlayerContext";
 import { SpotifyProvider } from "../context/SpotifyContext";
 import "../styles/globals.css";
 import "../styles/nonTailwind.css";
-import * as fal from "@fal-ai/serverless-client";
 
 nProgress.configure({
   showSpinner: false,
-});
-
-fal.config({
-  proxyUrl: "/api/fal/proxy",
 });
 
 function MyApp({ Component, pageProps }: AppProps) {

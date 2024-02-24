@@ -9,18 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@fal-ai/serverless-client": "^0.7.4",
-    "@fal-ai/serverless-proxy": "^0.6.0",
+    "@fal-ai/serverless-client": "^0.8.2",
+    "@fal-ai/serverless-proxy": "^0.7.3",
     "axios": "^0.24.0",
     "color.js": "^1.2.0",
     "framer-motion": "^10.18.0",
     "html-react-parser": "^1.4.4",
+    "moment": "^2.30.1",
     "next": "^12.0.7",
     "next-auth": "^4.0.5",
     "nprogress": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.3.1"
+    "react-icons": "^4.3.1",
+    "zustand": "^4.5.1"
   },
   "devDependencies": {
     "@types/node": "20.10.7",
