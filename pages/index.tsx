@@ -12,25 +12,33 @@ import { getGreeting } from "../utils/getGreeting";
 import { isAuthenticated } from "../utils/isAuthenticated";
 import MovingCanvas from "../components/MovingCanvas";
 
-export default function Home({ newReleases, featuredPlaylists }) {
+export default function Home({ session }) {
   return (
-    <Layout title="Welcome to Spotify">
-      {/* <h1 className="mb-5 text-3xl font-bold">Good {getGreeting()}</h1> */}
-      {/* <Header /> */}
-      <CurrentlyPlaying />
-      <MovingCanvas />
+    <Layout title="Welcome to ArtOS">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          textAlign: "center",
+        }}
+      >
+        {session?.user.email}
+        <br />
+        {session?.user.name}
+        <img src={session?.user.picture} width={100} height={100} />
+      </div>
 
-      {/* <Heading text="New releases" className="mt-10" /> */}
-      {/* <AlbumList albums={newReleases?.albums.items} /> */}
-
-      {/* <Heading text={featuredPlaylists?.message} className="mt-16" /> */}
-      {/* <PlaylistList playlists={featuredPlaylists?.playlists.items} /> */}
+      {/* <CurrentlyPlaying />
+      <MovingCanvas /> */}
     </Layout>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx);
+  console.log(session);
 
   if (!(await isAuthenticated(session))) {
     return {
@@ -41,15 +49,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  const newReleases = await customGet(
-    "https://api.spotify.com/v1/browse/new-releases?country=IN&limit=25",
-    session
-  );
+  // const newReleases = await customGet(
+  //   "https://api.spotify.com/v1/browse/new-releases?country=IN&limit=25",
+  //   session
+  // );
 
-  const featuredPlaylists = await customGet(
-    "https://api.spotify.com/v1/browse/featured-playlists?country=IN",
-    session
-  );
+  // const featuredPlaylists = await customGet(
+  //   "https://api.spotify.com/v1/browse/featured-playlists?country=IN",
+  //   session
+  // );
 
-  return { props: { newReleases, featuredPlaylists } };
+  return { props: { session } };
 };
