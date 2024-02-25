@@ -61,7 +61,7 @@ export default function MovingCanvasV() {
     setInterval(() => {
       fetchCurrentPlaying();
     }, 500);
-    console.log(playing);
+    console.log("playing:" + playing);
   }, []);
 
   useEffect(() => {

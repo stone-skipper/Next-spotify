@@ -14,6 +14,7 @@
     "axios": "^0.24.0",
     "color.js": "^1.2.0",
     "framer-motion": "^10.18.0",
+    "googleapis": "^133.0.0",
     "html-react-parser": "^1.4.4",
     "moment": "^2.30.1",
     "next": "^12.0.7",

@@ -6,12 +6,17 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getSession({ req });
+  try {
+    const session = await getSession({ req });
 
-  const currentPlay = await customGet(
-    "https://api.spotify.com/v1/me/player/currently-playing",
-    session
-  );
+    const currentPlay = await customGet(
+      "https://api.spotify.com/v1/me/player/currently-playing",
+      session
+    );
 
-  res.status(200).json(currentPlay);
+    res.status(200).json(currentPlay);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
 }

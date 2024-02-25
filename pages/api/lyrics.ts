@@ -53,7 +53,8 @@ export default async function handler(
       "https://api.spotify.com/v1/me/player/currently-playing",
       session
     );
-    const lyrics = await lyricsGet(session, currentPlay.item.id);
+    console.log(currentPlay);
+    const lyrics = await lyricsGet(session, currentPlay.item?.id);
 
     res.status(200).json(lyrics);
   } catch (error) {

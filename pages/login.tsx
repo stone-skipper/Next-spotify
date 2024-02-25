@@ -4,11 +4,11 @@ import Layout from "../components/Layout";
 import { motion } from "framer-motion";
 export default function Login() {
   const handleSpotifyLogin = () => {
-    signIn("spotify", { callbackUrl: "http://localhost:3000" });
+    signIn("spotify", { callbackUrl: "http://localhost:3000/vertical" });
   };
 
   const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "http://localhost:3000" });
+    signIn("google", { callbackUrl: "http://localhost:3000/calendar" });
   };
 
   return (
@@ -50,9 +50,9 @@ export default function Login() {
             width: "fit-content",
             height: "fit-content",
           }}
-          className="bg-blue focus:outline-none rounded-full"
-          whileHover={{ background: "rgb(0, 145, 44)" }}
-          animate={{ background: "rgb(29, 185, 84)" }}
+          className="bg-[blue] focus:outline-none rounded-full"
+          // whileHover={{ background: "rgb(0, 145, 44)" }}
+          // animate={{ background: "rgb(29, 185, 84)" }}
           transition={{ duration: 0.4 }}
           onClick={handleGoogleLogin}
         >

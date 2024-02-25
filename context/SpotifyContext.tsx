@@ -36,6 +36,9 @@ interface ContextProps {
   setTracksQueue: Dispatch<SetStateAction<Track[]>>;
   play: () => void;
   pause: () => void;
+  calendar: any;
+  setCalendar: any;
+  fetchCalendar: () => void;
 }
 
 const SpotifyContext = createContext({} as ContextProps);
@@ -44,6 +47,7 @@ export const SpotifyProvider = ({ children }: any) => {
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
   const [playing, setPlaying] = useState<PlayingType>(null);
   const [lyrics, setLyrics] = useState(null);
+  const [calendar, setCalendar] = useState(null);
 
   const [searchResults, setSearchResults] = useState<SearchResults | null>(
     null
@@ -106,6 +110,15 @@ export const SpotifyProvider = ({ children }: any) => {
       console.error(err);
     }
   };
+  const fetchCalendar = async () => {
+    try {
+      const resp = await axios.get("/api/calendar");
+      setCalendar(resp.data);
+      console.log(resp.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const play = async () => {
     try {
@@ -152,6 +165,9 @@ export const SpotifyProvider = ({ children }: any) => {
         fetchTrackAnalysis,
         play,
         pause,
+        calendar,
+        setCalendar,
+        fetchCalendar,
       }}
     >
       {children}

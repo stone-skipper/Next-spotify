@@ -13,8 +13,9 @@ export default async function handler(
       "https://api.spotify.com/v1/me/player/currently-playing",
       session
     );
+    console.log(currentPlay.item);
     const audioAnalysis = await customGet(
-      "https://api.spotify.com/v1/audio-analysis/" + currentPlay.item.id,
+      "https://api.spotify.com/v1/audio-analysis/" + currentPlay.item?.id,
       session
     );
     // const lyrics = await lyricsGet(session, currentPlay.item.id);
