@@ -4,18 +4,27 @@ import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import PlayControl from "./PlayControl";
+import { useInterfaceStore } from "../utils/store";
+import {
+  ArrowCounterClockwise,
+  Play,
+  Pause,
+  Playlist,
+} from "@phosphor-icons/react/dist/ssr";
 
 interface UseSession {
   data: MySession | null;
 }
 
 export default function CurrentlyPlayingV() {
+  const vertical = useInterfaceStore((state) => state.vertical);
   const lyricsHeight = 60;
-  const { playing, fetchCurrentPlaying } = useSpotify();
+  const { playing, fetchCurrentPlaying, play, pause } = useSpotify();
   const { lyrics, fetchLyrics } = useSpotify();
   const { data: session }: UseSession = useSession();
 
   const [current, setCurrent] = useState("");
+  const [hoverCover, setHoverCover] = useState(false);
   const [toggleLyric, setToggleLyric] = useState(true);
 
   function getCurrentLyricIndex(lyrics, currentTimestamp) {
@@ -64,7 +73,7 @@ export default function CurrentlyPlayingV() {
     <div
       style={{
         display: "flex",
-        flexDirection: "row",
+        flexDirection: vertical === true ? "row" : "column-reverse",
         position: "fixed",
         justifyContent: "space-between",
         alignItems: "center",
@@ -73,48 +82,63 @@ export default function CurrentlyPlayingV() {
         top: 0,
         left: 0,
         zIndex: 1000,
-        // padding: 20,
-        // background: "blue",
+        gap: 0,
       }}
     >
-      <div
+      <motion.div
         style={{
-          display: "none",
-          flexDirection: "row",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        {session?.user?.picture === undefined ? (
-          <div className="bg-[#333333] p-1 rounded-full text-2xl w-8 h-8"></div>
-        ) : (
-          <img
-            src={session?.user?.picture}
-            className="object-contain w-8 h-8 rounded-full"
-            alt={session?.user?.name}
-          />
-        )}
-        <span className="text-sm font-bold tracking-wide">
-          {session?.user?.name}
-        </span>
-      </div>
+          position: "fixed",
+          bottom: 20,
+          right: 20,
 
-      {/* {playing?.is_playing === true ? "playing" : "paused"}
-      <br />
-      {playing?.progress_ms}
-      <br />
-      {playing?.item.id} */}
-
-      <div
-        style={{
-          width: "50vw",
-          height: "100vh",
-          //   background: "blue",
+          zIndex: 10000,
+          padding: 10,
+          borderRadius: 100,
+          background: "rgba(255,255,255,0.1)",
           display: "flex",
-          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+          cursor: "pointer",
+        }}
+        whileHover={{ background: "rgba(255,255,255,0.2)", scale: 1.05 }}
+        onClick={() => {
+          useInterfaceStore.setState({ vertical: !vertical });
+        }}
+      >
+        <ArrowCounterClockwise size={20} color={"white"} />
+      </motion.div>
+
+      <motion.div
+        style={{
+          position: "fixed",
+          bottom: 20,
+          right: 70,
+          zIndex: 10000,
+          padding: 10,
+          borderRadius: 100,
+          background: "rgba(255,255,255,0.1)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          cursor: "pointer",
+        }}
+        whileHover={{ background: "rgba(255,255,255,0.2)", scale: 1.05 }}
+        onClick={() => {
+          setToggleLyric(!toggleLyric);
+        }}
+      >
+        <Playlist size={20} color={"white"} />
+      </motion.div>
+
+      <div
+        style={{
+          width: vertical === true ? "50vw" : "100vw",
+          height: vertical === true ? "100vh" : "50vh",
+          // background: "blue",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: vertical === true ? "center" : "flex-start",
+          justifyContent: vertical === true ? "center" : "flex-end",
         }}
       >
         <div
@@ -124,13 +148,14 @@ export default function CurrentlyPlayingV() {
             alignItems: "center",
             gap: 20,
             marginRight: "calc(50vw - 40px - 80px)",
-            //   position: "fixed",
-            width: "100vh",
+
+            width: vertical === true ? "100vh" : "100vw",
             height: "fit-content",
             padding: 20,
             // background: "rgba(255,255,255,0.1)",
-            transform: "rotate(90deg)",
+            transform: vertical === true ? "rotate(90deg)" : "rotate(0deg)",
             // background: "red",
+            userSelect: "none",
           }}
         >
           {playing && (
@@ -139,30 +164,63 @@ export default function CurrentlyPlayingV() {
                 width: 80,
                 height: 80,
 
-                borderRadius: 4,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                userSelect: "none",
+                position: "relative",
+                cursor: "pointer",
+                borderRadius: 5,
+                overflow: "hidden",
               }}
-              // animate={{ rotate: playing?.is_playing === true ? 360 : 0 }}
-              // transition={{
-              //   repeat: Infinity,
-              //   duration: playing?.is_playing === true ? 10 : 0,
-              //   ease: "linear",
-              // }}
+              onMouseOver={() => {
+                setHoverCover(true);
+              }}
+              onMouseLeave={() => {
+                setHoverCover(false);
+              }}
+              whileHover={{ scale: 1.05 }}
+              onClick={() => {
+                if (playing?.is_playing === true) {
+                  pause();
+                } else {
+                  play();
+                }
+              }}
             >
               <img
                 src={playing?.item?.album.images[0].url}
                 width={80}
                 height={80}
-                style={{ borderRadius: 5 }}
+                style={{ aspectRatio: 1 / 1 }}
               />
+              <motion.div
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  background: "rgba(0,0,0,0.1)",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                animate={{
+                  opacity: hoverCover === true ? 1 : 0,
+                }}
+              >
+                {playing?.is_playing === true ? (
+                  <Pause color="white" weight="fill" size={30} />
+                ) : (
+                  <Play color="white" weight="fill" size={30} />
+                )}
+              </motion.div>
             </motion.div>
           )}
           <div
             style={{
               display: "flex",
               flexDirection: "column",
+              userSelect: "none",
             }}
           >
             <div
@@ -171,6 +229,10 @@ export default function CurrentlyPlayingV() {
                 flexDirection: "row",
                 gap: 5,
                 opacity: 0.8,
+                width: "fit-content",
+                height: "fit-content",
+                whiteSpace: "nowrap",
+                userSelect: "none",
               }}
             >
               {playing?.item?.artists.map((info, index) => {
@@ -182,17 +244,26 @@ export default function CurrentlyPlayingV() {
                 );
               })}
             </div>
-            <span style={{ fontSize: 20 }}>{playing?.item?.name}</span>
+            <div
+              style={{
+                fontSize: 20,
+                width: "fit-content",
+                height: "fit-content",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {playing?.item?.name}
+            </div>
           </div>
         </div>
       </div>
       <div
         style={{
-          width: "50vw",
-          height: "100vh",
-          //   background: "green",
+          width: vertical === true ? "50vw" : "100vw",
+          height: vertical === true ? "100vh" : "50vh",
+          // background: "green",
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           padding: 0,
@@ -201,12 +272,13 @@ export default function CurrentlyPlayingV() {
         <div
           style={{
             height: lyricsHeight * 3,
-            width: "100vh",
+            width: vertical === true ? "86vh" : "96vw",
             opacity: toggleLyric === true ? 1 : 0,
+            // background: "yellow",
             overflow: "hidden",
             WebkitMaskImage:
               "linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
-            transform: "rotate(90deg)",
+            transform: vertical === true ? "rotate(90deg)" : "rotate(0deg)",
           }}
         >
           {lyrics && lyrics.error === false && playing && (
@@ -254,26 +326,7 @@ export default function CurrentlyPlayingV() {
           )}
           {lyrics && lyrics.error !== false && lyrics.message}
         </div>
-        <motion.div
-          style={{
-            background: "white",
-            width: 20,
-            height: 20,
-            borderRadius: 100,
-            marginRight: 20,
-          }}
-          animate={{ opacity: toggleLyric === true ? 0.2 : 1 }}
-          whileHover={{ opacity: 0.4, scale: 1.1 }}
-          onClick={() => {
-            setToggleLyric(!toggleLyric);
-          }}
-        ></motion.div>
-        <PlayControl rotate={true} />
       </div>
-
-      {/* {playing?.item.artists.map((info, index) => {
-        return <div key={`artist${index}`}>{info}</div>;
-      })} */}
     </div>
   );
 }

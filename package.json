@@ -11,6 +11,7 @@
   "dependencies": {
     "@fal-ai/serverless-client": "^0.8.2",
     "@fal-ai/serverless-proxy": "^0.7.3",
+    "@phosphor-icons/react": "^2.0.15",
     "axios": "^0.24.0",
     "color.js": "^1.2.0",
     "framer-motion": "^10.18.0",

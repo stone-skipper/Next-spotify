@@ -6,6 +6,7 @@ import { useSpotify } from "../context/SpotifyContext";
 import { getRandomColorBetween, interpolateColor } from "../utils/drawUtils";
 import { prominent, average } from "color.js";
 import { motion } from "framer-motion";
+import { useInterfaceStore } from "../utils/store";
 
 fal.config({
   credentials: process.env.FAL_KEY,
@@ -13,6 +14,8 @@ fal.config({
 });
 
 export default function MovingCanvasV() {
+  const vertical = useInterfaceStore((state) => state.vertical);
+
   const [wSize, setWSize] = useState({ w: 512, h: 512 });
   const [color, setColor] = useState(null);
   const [colors, setColors] = useState([]);
@@ -433,40 +436,37 @@ export default function MovingCanvasV() {
           ]}
       </div>
 
-      <div
+      <motion.div
         style={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           position: "fixed",
-          right: 0,
-          top: 0,
+          right: vertical === true ? "5vw" : "auto",
+          top: vertical === true ? "5vw" : "auto",
+          bottom: vertical === true ? "auto" : "5vw",
+          left: vertical === true ? "auto" : "5vw",
           width: "90vw",
-          marginRight: "5vw",
-          marginTop: "5vw",
           height: "90vw",
           overflow: "hidden",
           borderRadius: 1000,
           background: color,
         }}
+        initial={{ y: 200 }}
+        animate={{
+          y: 0,
+          opacity: playing?.is_playing === true ? 1 : 0.1,
+          scale: playing?.is_playing === true ? 1 : 0.7,
+        }}
+        transition={{ y: { duration: 0.6 } }}
       >
-        <canvas ref={canvasRef} width={wSize.w * 0.9} height={wSize.w * 0.9} />
-
-        {start === true && (
-          <img
-            src={result}
-            width={wSize.w}
-            height={wSize.h}
-            style={{
-              opacity: 0.8,
-              position: "absolute",
-              left: 0,
-              top: 0,
-              zIndex: 2,
-            }}
-          />
-        )}
-      </div>
+        <canvas
+          ref={canvasRef}
+          width={wSize.w * 0.9}
+          height={wSize.w * 0.9}
+          style={{ opacity: playing?.is_playing === true ? 1 : 0 }}
+        />
+      </motion.div>
     </div>
   );
 }
