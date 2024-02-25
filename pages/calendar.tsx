@@ -5,8 +5,7 @@ import { getSession, useSession } from "next-auth/react";
 
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-
-import { customGet } from "../utils/customGet";
+import CalendarArt from "../components/CalendarArt";
 
 import { isAuthenticated } from "../utils/isAuthenticated";
 
@@ -28,29 +27,7 @@ export default function Calendar({ session }) {
   }, []);
   return (
     <Layout title="Welcome to Spotify">
-      Calendar
-      {events &&
-        events.length !== 0 &&
-        events.map((info, index) => {
-          return (
-            <div
-              key={index}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                background: "green",
-                width: "fit-content",
-                height: "fit-content",
-                marginBottom: 5,
-              }}
-            >
-              {info.summary}
-              <br />
-              {info.start.dateTime} <br />
-              {info.end.dateTime}
-            </div>
-          );
-        })}
+      <CalendarArt events={events} />
     </Layout>
   );
 }

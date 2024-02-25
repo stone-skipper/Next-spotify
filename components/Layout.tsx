@@ -14,9 +14,7 @@ export default function Layout({ children, title }: IProps) {
       <Head>
         <title>{title}</title>
       </Head>
-      <section
-        className={`w-full ${router.pathname === "/login" ? "" : "p-4"}`}
-      >
+      <section className={`w-full ${router.pathname === "/login" ? "" : ""}`}>
         {children}
       </section>
     </>

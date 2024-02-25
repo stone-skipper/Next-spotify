@@ -49,6 +49,9 @@ const TestHandler: NextApiHandler = async (req, res) => {
   //     // return error;
   //   }
 
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
+
   try {
     // List all calendars
     const calendarList = await calendar.calendarList.list();
@@ -60,7 +63,7 @@ const TestHandler: NextApiHandler = async (req, res) => {
     for (const calendarId of calendarIds) {
       const events = await calendar.events.list({
         calendarId: calendarId,
-        timeMin: new Date().toISOString(),
+        timeMin: todayStart.toISOString(),
         maxResults: 10, // Fetch up to 10 future events from each calendar
         singleEvents: true,
         orderBy: "startTime",
