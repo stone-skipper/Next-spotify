@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import PlayControl from "./PlayControl";
+import Time from "./Time";
 import { useInterfaceStore } from "../utils/store";
 import {
   ArrowCounterClockwise,
   Play,
   Pause,
   Playlist,
+  Clock,
 } from "@phosphor-icons/react/dist/ssr";
 
 interface UseSession {
@@ -24,6 +26,7 @@ export default function CurrentlyPlayingV() {
   const { data: session }: UseSession = useSession();
 
   const [current, setCurrent] = useState("");
+  const [time, toggleTime] = useState(false);
   const [hoverCover, setHoverCover] = useState(false);
   const [toggleLyric, setToggleLyric] = useState(true);
 
@@ -112,7 +115,7 @@ export default function CurrentlyPlayingV() {
         style={{
           position: "fixed",
           bottom: 20,
-          right: 70,
+          right: 120,
           zIndex: 10000,
           padding: 10,
           borderRadius: 100,
@@ -128,6 +131,27 @@ export default function CurrentlyPlayingV() {
         }}
       >
         <Playlist size={20} color={"white"} />
+      </motion.div>
+      <motion.div
+        style={{
+          position: "fixed",
+          bottom: 20,
+          right: 70,
+          zIndex: 10000,
+          padding: 10,
+          borderRadius: 100,
+          background: "rgba(255,255,255,0.1)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          cursor: "pointer",
+        }}
+        whileHover={{ background: "rgba(255,255,255,0.2)", scale: 1.05 }}
+        onClick={() => {
+          toggleTime(!time);
+        }}
+      >
+        <Clock size={20} color={"white"} />
       </motion.div>
 
       <div
@@ -326,6 +350,7 @@ export default function CurrentlyPlayingV() {
           )}
           {lyrics && lyrics.error !== false && lyrics.message}
         </div>
+        {time === true && <Time />}
       </div>
     </div>
   );

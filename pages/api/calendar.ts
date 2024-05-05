@@ -51,7 +51,8 @@ const TestHandler: NextApiHandler = async (req, res) => {
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
-
+  const tomorrowStart = new Date(todayStart);
+  tomorrowStart.setDate(tomorrowStart.getDate() + 1); // Start of tomorrow
   try {
     // List all calendars
     const calendarList = await calendar.calendarList.list();
@@ -64,12 +65,21 @@ const TestHandler: NextApiHandler = async (req, res) => {
       const events = await calendar.events.list({
         calendarId: calendarId,
         timeMin: todayStart.toISOString(),
+        timeMax: tomorrowStart.toISOString(),
         maxResults: 10, // Fetch up to 10 future events from each calendar
         singleEvents: true,
         orderBy: "startTime",
       });
 
-      allEvents.push(...events.data.items);
+      const filteredEvents = events.data.items.filter((event) => {
+        const start = new Date(event.start.dateTime || event.start.date);
+        const end = new Date(event.end.dateTime || event.end.date);
+        // @ts-ignore
+        const durationHours = (end - start) / (1000 * 60 * 60);
+        return durationHours < 24;
+      });
+
+      allEvents.push(...filteredEvents);
     }
 
     // Sort all events by start time
@@ -80,7 +90,8 @@ const TestHandler: NextApiHandler = async (req, res) => {
     );
 
     // Select the closest 10 events
-    const closestEvents = allEvents.slice(0, 10);
+    // const closestEvents = allEvents.slice(0, 10);
+    const closestEvents = allEvents;
 
     res.status(200).json(closestEvents);
   } catch (error) {

@@ -11,6 +11,7 @@ import { customGet } from "../utils/customGet";
 import { getGreeting } from "../utils/getGreeting";
 import { isAuthenticated } from "../utils/isAuthenticated";
 import MovingCanvas from "../components/MovingCanvas";
+import Link from "next/link";
 
 export default function Home({ session }) {
   return (
@@ -24,10 +25,14 @@ export default function Home({ session }) {
           textAlign: "center",
         }}
       >
-        {session?.user.email}
+        <Link href="/calendar">Calendar</Link>
+        <Link href="/clock">Clock</Link>
+        <Link href="/vertical">Music</Link>
+
+        {/* {session?.user.email}
         <br />
         {session?.user.name}
-        <img src={session?.user.picture} width={100} height={100} />
+        <img src={session?.user.picture} width={100} height={100} /> */}
       </div>
 
       {/* <CurrentlyPlaying />
@@ -40,14 +45,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx);
   console.log(session);
 
-  if (!(await isAuthenticated(session))) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
+  // if (!(await isAuthenticated(session))) {
+  //   return {
+  //     redirect: {
+  //       destination: "/login",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
 
   // const newReleases = await customGet(
   //   "https://api.spotify.com/v1/browse/new-releases?country=IN&limit=25",
