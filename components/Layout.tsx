@@ -14,9 +14,11 @@ export default function Layout({ children, title }: IProps) {
       <Head>
         <title>{title}</title>
       </Head>
-      <section className={`w-full ${router.pathname === "/login" ? "" : ""}`}>
+      {/* <section className={`w-full ${router.pathname === "/login" ? "" : ""}`}> */}
+      <div style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
         {children}
-      </section>
+      </div>
+      {/* </section> */}
     </>
   );
 }

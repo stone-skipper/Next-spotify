@@ -1,22 +1,12 @@
-import { GetServerSideProps } from "next";
-import { getToken } from "next-auth/jwt";
-import { getSession } from "next-auth/react";
-import AlbumList from "../components/AlbumList";
-import Heading from "../components/Heading";
+import BlobClock from "../components/BlobClock";
+
 import Layout from "../components/Layout";
-import Header from "../components/Header";
-import PlaylistList from "../components/PlaylistList";
-import CurrentlyPlaying from "../components/CurrentPlaying";
-import { customGet } from "../utils/customGet";
-import { getGreeting } from "../utils/getGreeting";
-import { isAuthenticated } from "../utils/isAuthenticated";
-import MovingCanvas from "../components/MovingCanvas";
-import Link from "next/link";
 
 export default function Home({ session }) {
   return (
-    <Layout title="Welcome to ArtOS">
-      <div
+    <Layout title="Timeface (beta)">
+      <BlobClock />
+      {/* <div
         style={{
           display: "flex",
           justifyContent: "center",
@@ -28,12 +18,13 @@ export default function Home({ session }) {
         <Link href="/calendar">Calendar</Link>
         <Link href="/clock">Clock</Link>
         <Link href="/vertical">Music</Link>
+        <Link href="/pomodoro">Timer</Link>
 
-        {/* {session?.user.email}
+        {session?.user.email}
         <br />
         {session?.user.name}
-        <img src={session?.user.picture} width={100} height={100} /> */}
-      </div>
+        <img src={session?.user.picture} width={100} height={100} />
+      </div> */}
 
       {/* <CurrentlyPlaying />
       <MovingCanvas /> */}
@@ -41,28 +32,28 @@ export default function Home({ session }) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getSession(ctx);
-  console.log(session);
+// export const getServerSideProps: GetServerSideProps = async (ctx) => {
+//   const session = await getSession(ctx);
+//   console.log(session);
 
-  // if (!(await isAuthenticated(session))) {
-  //   return {
-  //     redirect: {
-  //       destination: "/login",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
+// if (!(await isAuthenticated(session))) {
+//   return {
+//     redirect: {
+//       destination: "/login",
+//       permanent: false,
+//     },
+//   };
+// }
 
-  // const newReleases = await customGet(
-  //   "https://api.spotify.com/v1/browse/new-releases?country=IN&limit=25",
-  //   session
-  // );
+// const newReleases = await customGet(
+//   "https://api.spotify.com/v1/browse/new-releases?country=IN&limit=25",
+//   session
+// );
 
-  // const featuredPlaylists = await customGet(
-  //   "https://api.spotify.com/v1/browse/featured-playlists?country=IN",
-  //   session
-  // );
+// const featuredPlaylists = await customGet(
+//   "https://api.spotify.com/v1/browse/featured-playlists?country=IN",
+//   session
+// );
 
-  return { props: { session } };
-};
+//   return { props: { session } };
+// };

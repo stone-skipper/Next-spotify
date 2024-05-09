@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import GoogleProvider from "next-auth/providers/google";
+import { createClient } from "@supabase/supabase-js";
+import { SupabaseAdapter } from "@next-auth/supabase-adapter";
 
 const SpotifyScope =
   "user-read-recently-played user-read-playback-state user-top-read user-modify-playback-state user-read-currently-playing user-follow-read playlist-read-private user-read-email user-read-private user-library-read playlist-read-collaborative";
@@ -16,6 +18,11 @@ const GOOGLE_AUTHORIZATION_URL =
     access_type: "offline",
     response_type: "code",
   });
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
 
 export default NextAuth({
   providers: [
@@ -41,6 +48,13 @@ export default NextAuth({
     strategy: "jwt",
     maxAge: 1 * 24 * 60 * 60, // 1 day
   },
+  adapter: SupabaseAdapter(supabase),
+  // callbacks: {
+  //   async session(session, token) {
+  //     session.user.id = token.sub; // Set user ID for use on the client side
+  //     return session;
+  //   },
+  // },
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
@@ -52,8 +66,12 @@ export default NextAuth({
       }
       return token;
     },
-    async session({ session, token }) {
-      session.user = token;
+    // async session({ session, token }) {
+    //   session.user = token;
+    //   return session;
+    // },
+    async session(session, token) {
+      session.user.id = token.sub; // Set user ID for use on the client side
       return session;
     },
   },
